@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app =express();
@@ -38,6 +38,13 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result)
     })
+
+    app.get('/product/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await carCollection.findOne(query);
+      res.send(result);
+    })
     
     app.post('/product', async(req, res)=>{
         const newProduct = req.body;
@@ -45,6 +52,37 @@ async function run() {
         const result = await carCollection.insertOne(newProduct);
         res.send(result);
     })
+
+    app.put('/product/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = {_id:new ObjectId(id)}
+      const options = {updsert:true} 
+      const updateCar = req.body;
+      const car = {
+        $set:{
+          name:updateCar.name,
+          brandname:updateCar.brandname,
+          logo:updateCar.logo,
+          image:updateCar.image,
+          type:updateCar.type,
+          price:updateCar.price,
+          rating:updateCar.rating,
+          details:updateCar.details
+        }
+      }
+      const result = await carCollection.updateOne(filter, car, options)
+      res.send(result)
+    })
+
+    app.delete('/product/:id', async(req, res)=> {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await carCollection.deleteOne(query);
+      res.send(result);
+  })
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
