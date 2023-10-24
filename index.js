@@ -39,12 +39,18 @@ async function run() {
         res.send(result)
     })
 
-    app.get('/product/:id', async(req, res)=>{
+    app.get('/product/:id([0-9a-fA-F]{24})', async(req, res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await carCollection.findOne(query);
       res.send(result);
     })
+    // app.get('/product/:brandname', async(req, res)=>{
+    //   const brandname = req.params.brandname;
+    //   const query = {brandname: new ObjectId(brandname)}
+    //   const result = await carCollection.findOne(query);
+    //   res.send(result);
+    // })
     
     app.post('/product', async(req, res)=>{
         const newProduct = req.body;
